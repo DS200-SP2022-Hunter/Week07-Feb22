@@ -1,1 +1,131 @@
-# Week07-Feb22
+# Lab Assignment 07, Due on [Canvas](https://psu.instructure.com/courses/2174978/), Mar. 2 at 11:59pm
+## Create a Map-Based Visualization from the U.S. Flights Dataset
+
+The main objective of this week's lab is to produce at least one visualization, consisting of a map (or maps) of the United States, using data from the massive dataset used in [Lab 6](https://github.com/DS200-SP2022-Hunter/Week06-Feb15).  
+
+Objective:  Use the example code provided to create a map that somehow depicts at least two aspects of the flights.csv dataset.  For instance, the example code shows average flight time as well as the total number of flights departing from a subset of the airports.  You may use a subset of the full dataset if you wish, just as the example considers only flights involving two specific airlines.  You may also produce more than one map if you wish.
+
+```
+#########################################################
+# DS 200, SP 2022 semester
+# python code related to Lab 07
+#########################################################
+
+# Load needed python resources, including folium mapping module
+from datascience import *
+import matplotlib
+matplotlib.use('Agg', warn=False)
+%matplotlib inline
+import matplotlib.pyplot as plots
+plots.style.use('fivethirtyeight')
+import numpy as np
+import pandas as pd
+np.set_printoptions(threshold=50)
+import folium
+
+# Read massive dataset.  Your file path may be different,
+# depending on where you've been able to store the kaggle file
+# called flights.csv
+flights = Table.read_table(
+'drive/My Drive/Colab Notebooks/data/flights.csv')
+
+# Read airports dataset containing airport names and lat/lon coordinates
+airports = Table.read_table(
+'http://personal.psu.edu/drh20/200DS/airports.csv')
+
+# Read airlines dataset containing airline names
+airlines = Table.read_table(
+'http://personal.psu.edu/drh20/200DS/airlines.csv')
+
+# Figure out how many flights per airline
+count_by_airline = (flights
+.relabeled('AIRLINE', 'AIRLINE_CODE')
+.group('AIRLINE_CODE')
+.join('AIRLINE_CODE', airlines, 'IATA_CODE')
+.relabeled('AIRLINE', 'AIRLINE_NAME')
+.sort('count', descending = True))
+count_by_airline.show()
+
+# Check out the columns available in the flights dataset
+flights.labels
+
+# Calculate average departure delay for each airline
+avg_delays = (flights
+.select('AIRLINE', 'DEPARTURE_DELAY')
+.relabeled('AIRLINE', 'AIRLINE_CODE')
+.group('AIRLINE_CODE', np.nanmean)
+.relabeled('DEPARTURE_DELAY nanmean', 'AVG_DELAY')
+.join('AIRLINE_CODE', airlines, 'IATA_CODE')
+.relabeled('AIRLINE', 'AIRLINE_NAME')
+.sort('AVG_DELAY'))
+avg_delays.show()
+
+# Consider only flights by American and American Eagle
+AmFlights = (flights
+.where('AIRLINE', are.contained_in('AA MQ')))
+
+# Count flights for each ORIGIN_AIRPORT
+counts = AmFlights.group('ORIGIN_AIRPORT').sort('count', descending=True)
+counts
+
+# Find average AIR_TIME for each ORIGIN_AIRPORT and join lat/lon info
+avg_airtime = (AmFlights
+.select('AIR_TIME', 'ORIGIN_AIRPORT')
+.group('ORIGIN_AIRPORT', np.nanmean)
+.relabeled('AIR_TIME nanmean', 'AVG_AIRTIME')
+.join('ORIGIN_AIRPORT', airports, 'IATA_CODE') # join lat/lon and 
+names
+.join('ORIGIN_AIRPORT', counts, 'ORIGIN_AIRPORT') # join counts
+.select('ORIGIN_AIRPORT', 'AVG_AIRTIME', 'AIRPORT', 'LATITUDE', 
+'LONGITUDE', 'count')
+.relabeled('AIRPORT', 'AIRPORT_NAME'))
+avg_airtime
+
+# Create folium map with circles having radius proportional to air time
+AmericanAirlinesMap = folium.Map(location=[35, -100],
+tiles="OpenStreetMap", zoom_start=4,
+width='100%', height='100%')
+for i in np.arange(avg_airtime.num_rows):
+folium.Circle([avg_airtime.column('LATITUDE')[i],
+avg_airtime.column('LONGITUDE')[i]],
+radius = 250 * avg_airtime.column('AVG_AIRTIME')[i],
+fill=True).add_to(AmericanAirlinesMap)
+AmericanAirlinesMap
+
+# Use 'cut' method in pandas module to create a categorical
+# variable from a numerical variable
+# (in this case, change count values into colors)
+count_colors = pd.cut(avg_airtime.column('count'),
+bins = [0, 10000, 25000, 50000, 100000, 200000],
+labels = ['blue', 'green', 'yellow', 'orange', 
+'red'])
+Table().with_column('color', count_colors)
+
+# Add the color column to the avg_airtime table
+avg_airtime = avg_airtime.with_column('color', count_colors)
+avg_airtime
+
+# Recreate folium map with circles having radius proportional to air time
+# Now use colors to categorize how many flights leave from the airport
+AmericanAirlinesMap = folium.Map(location=[35, -100],
+tiles="OpenStreetMap", zoom_start=4,
+width='100%', height='100%')
+for i in np.arange(avg_airtime.num_rows):
+folium.Circle([avg_airtime.column('LATITUDE')[i],
+avg_airtime.column('LONGITUDE')[i]],
+radius = 250 * avg_airtime.column('AVG_AIRTIME')[i],
+color = avg_airtime.column('color')[i],
+fill=False).add_to(AmericanAirlinesMap)
+AmericanAirlinesMaptiles="OpenStreetMap", zoom_start=4,
+width='100%', height='100%')
+for i in np.arange(avg_airtime.num_rows):
+folium.Circle([avg_airtime.column('LATITUDE')[i],
+avg_airtime.column('LONGITUDE')[i]],
+radius = 250 * avg_airtime.column('AVG_AIRTIME')[i],
+```
+
+Your assignment is as follows:
+
+1. Create a new Jupyter notebook in which you produce at least one map of the United States that you find interesting.  Your notebook should include supporting text explaining what the map shows. The data to use for this map come from the `flights.csv` file used in [Lab 6](https://github.com/DS200-SP2022-Hunter/Week06-Feb15), and you should somehow summarize at least two variables from that dataset in your visualization.  Please make sure that you use different variables and (if applicable) a different subset than in the example code.
+
+When you've completed this, you should select "Print" from the File menu, then save to pdf using this option.  The pdf file that you create in this way is the file that you should upload to Canvas for grading.  We have found that if you can select the "A3" paper size from the advanced options, this seems to solve problems with incorrect cropping of the pages.
