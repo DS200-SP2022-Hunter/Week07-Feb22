@@ -3,8 +3,7 @@
 
 The main objective of this week's lab is to produce at least one visualization, consisting of a map (or maps) of the United States, using data from the massive dataset used in [Lab 6](https://github.com/DS200-SP2022-Hunter/Week06-Feb15).  
 
-Objective:  Use the example code provided to create a map that somehow depicts at least two aspects of the flights.csv dataset.  For instance, the example code shows average flight time as well as the total number of flights departing from a subset of the airports.  You may use a subset of the full dataset if you wish, just as the example considers only flights involving two specific airlines.  You may also produce more than one map if you wish.
-
+Objective:  Use the example code provided to (a) create a map-based visualizaton of based on the flights.csv dataset, and (b) provide a short narrative based on what the visualization reveals.  For instance, the example code shows average flight time as well as the total number of flights departing from a subset of the airports.  As in the example, you may use a subset of the full dataset if you wish.  You may also produce more than one map if you wish.
 ```
 #########################################################
 # DS 200, SP 2022 semester
@@ -127,7 +126,7 @@ avg_airtime
 # orange means 50001 to 100000
 # red means 100001 to 200000
 AmericanAirlinesMap = folium.Map(location=[35, -100],
-     tiles="OpenStreetMap", zoom_start=4,
+     tiles="OpenStreetMap", zoom_start=3,
      width='100%', height='100%')
 # Add Circles one by one using info from avg_airtime Table
 for i in np.arange(avg_airtime.num_rows):
@@ -145,5 +144,7 @@ AmericanAirlinesMap
 Your assignment is as follows:
 
 1. Create a new Jupyter notebook in which you produce at least one map of the United States that you find interesting.  Your notebook should include supporting text, using a text box or boxes in your notebook, explaining in detail what the map shows. The data to use for this map come from the `flights.csv` file used in [Lab 6](https://github.com/DS200-SP2022-Hunter/Week06-Feb15), and you should somehow summarize at least two different variables created from that dataset in your visualization.  Please do not use exactly the same variables and subset of the flights as in the example code.
+
+2. Create a text box that explains interesting aspects of what your map reveals.  In the example above, we might notice that:  The busiest airports served by American and American Eagle are clearly seen in red:  Chicago's O'Hare Airport and Dallas/Ft. Worth Airport, which are consistently two of the world's busiest airports.  Somewhat surprising perhaps is that the solid third place, which is the only airport shown in orange (between 100K and 200K flights), is Miami's Airport.  A more in-depth analysis could reveal whether Miami has so many flights because of international routes served by American Airlines.  We notice that airports that are more remote geographically from other airports tend to have longer average flight times, with Anchorage Alaska being an easy-to-understand outlier as clearly the largest circle.  Interestingly, the Hawaii airports don't have circles nearly as large as Anchorage, which reveals something about flights originating there (can you understand what it is? Further analysis could uncover the full details.)
 
 When you've completed this, you should select "Print" from the File menu, then save to pdf using this option.  The pdf file that you create in this way is the file that you should upload to Canvas for grading.  We have found that if you can select the "A3" paper size from the advanced options, this seems to solve problems with incorrect cropping of the pages.
