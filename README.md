@@ -1,4 +1,4 @@
-# Lab Assignment 07, Due on [Canvas](https://psu.instructure.com/courses/2174978/), Mar. 2 at 11:59pm
+# Lab Assignment 07, Due on [Canvas](https://psu.instructure.com/courses/2174978/modules/items/35065639), Mar. 2 at 11:59pm
 ## Create a Map-Based Visualization from the U.S. Flights Dataset
 
 The main objective of this week's lab is to produce at least one visualization, consisting of a map (or maps) of the United States, using data from the massive dataset used in [Lab 6](https://github.com/DS200-SP2022-Hunter/Week06-Feb15).  
