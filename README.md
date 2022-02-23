@@ -41,6 +41,7 @@ airlines.show()
 # Notice (and try to understand!) the various methods 
 # used to create the new Table 
 count_by_airline = (flights
+     .select('AIRLINE')
      .relabeled('AIRLINE', 'AIRLINE_CODE')
      .group('AIRLINE_CODE')
      .join('AIRLINE_CODE', airlines, 'IATA_CODE')
